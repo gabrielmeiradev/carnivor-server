@@ -44,6 +44,9 @@ export const getAllPosts = async (req: Request, res: Response) => {
           },
           parent_id: null,
           author: {
+            IdUser: {
+              equals: user.IdUser,
+            },
             TipoUser: {
               equals: filterOnlyAds ? $Enums.UserType.Anunciante : undefined,
             },
