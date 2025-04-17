@@ -7,7 +7,13 @@ const prisma = new PrismaClient();
 
 export const getAllPosts = async (req: Request, res: Response) => {
   try {
-    const { text, hashtags, page = 1, itemsPerPage = 10 } = req.query;
+    const {
+      text,
+      hashtags,
+      page = 1,
+      itemsPerPage = 10,
+      profileId,
+    } = req.query;
     const user = userModelFromToken(req.headers.authorization!);
 
     if (!user) {
@@ -42,10 +48,15 @@ export const getAllPosts = async (req: Request, res: Response) => {
             contains: text as string,
             mode: "insensitive",
           },
+
           parent_id: null,
           author: {
             IdUser: {
-              equals: user.IdUser,
+              equals: filterOnlyAds
+                ? user.IdUser
+                : profileId
+                ? (profileId as string)
+                : undefined,
             },
             TipoUser: {
               equals: filterOnlyAds ? $Enums.UserType.Anunciante : undefined,
@@ -118,14 +129,36 @@ export const getAllPosts = async (req: Request, res: Response) => {
       }),
     ]);
 
+    let userToSend;
+
+    if (profileId) {
+      userToSend = await prisma.user.findUnique({
+        where: {
+          IdUser: profileId as string,
+        },
+        select: {
+          Senha: false,
+          Login: true,
+          Nome: true,
+          TipoUser: true,
+          ProfileImage: true,
+          IdUser: true,
+        },
+      });
+    } else {
+      const { Senha, ...userWithoutPassword } = user;
+      userToSend = userWithoutPassword;
+    }
+
     res.status(StatusCodes.OK).json({
       posts,
       pagination: {
-        totalItems: totalPosts,
+        totalItems: posts.length,
         currentPage: pageNumber,
         itemsPerPage: itemsCount,
-        totalPages: Math.ceil(totalPosts / itemsCount),
+        totalPages: Math.ceil(posts.length / itemsCount),
       },
+      user: userToSend,
     });
   } catch (error) {
     console.error(error);
