@@ -4,7 +4,7 @@ import jwt from "jsonwebtoken";
 const secret = "MMMM";
 
 function accessTokenFromUser(user: object) {
-  return jwt.sign(user, secret, { expiresIn: "15m" });
+  return jwt.sign(user, secret, { expiresIn: "72h" });
 }
 
 function checkAccessToken(token: string) {
