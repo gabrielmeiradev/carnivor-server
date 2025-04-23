@@ -25,8 +25,15 @@ export const createPost = async (req: Request, res: Response) => {
 
   const images = req.files as Express.Multer.File[];
 
-  if (images.length <= 0) {
+  if (images.length <= 0 && !parent_id) {
     res.status(400).json({ message: "Nenhuma imagem enviada" });
+    return;
+  }
+
+  if (parent_id && images.length > 0) {
+    res.status(400).json({
+      message: "Não é permitido enviar imagens em comentários",
+    });
     return;
   }
 
