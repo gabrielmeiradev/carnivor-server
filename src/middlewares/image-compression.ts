@@ -16,7 +16,12 @@ export const compressImages = async (
     const compressedFiles: Express.Multer.File[] = [];
 
     for (const file of files) {
-      const outputPath = path.join("compressed", file.filename);
+      const outputPath = path.resolve(
+        process.cwd(),
+        "uploads",
+        "compressed",
+        file.filename
+      );
 
       await sharp(file.path).jpeg({ quality: 60 }).toFile(outputPath);
 
