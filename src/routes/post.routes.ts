@@ -10,7 +10,7 @@ import { editPostById } from "../controllers/post/edit-by-id";
 import { getAllPosts } from "../controllers/post/get-all";
 import { getCommentsById } from "../controllers/post/get-comments-by-id";
 import checkToken from "../middlewares/check-token";
-import { compressImage } from "../middlewares/image-compression";
+import { compressImages } from "../middlewares/image-compression";
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -53,7 +53,7 @@ postRouter.post(
   "/",
   checkToken,
   upload.array("media"),
-  compressImage,
+  compressImages,
   createPost
 );
 
@@ -65,7 +65,7 @@ postRouter.post(
   "/:id",
   checkToken,
   upload.array("media"),
-  compressImage,
+  compressImages,
   editPostById
 );
 

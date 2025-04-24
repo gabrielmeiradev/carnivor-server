@@ -3,26 +3,40 @@ import sharp from "sharp";
 import fs from "fs";
 import path from "path";
 
-export const compressImage = async (
+export const compressImages = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
-  if (!req.file) return next();
+  if (!req.files || !Array.isArray(req.files)) return next();
 
-  const inputPath = req.file.path;
-  const outputPath = path.join("compressed", `${req.file.filename}.jpeg`);
+  const files = req.files as Express.Multer.File[];
 
   try {
-    await sharp(inputPath).jpeg({ quality: 60 }).toFile(outputPath);
+    const compressedFiles: Express.Multer.File[] = [];
 
-    fs.unlinkSync(inputPath);
+    for (const file of files) {
+      const outputPath = path.join("compressed", `${file.filename}.jpeg`);
 
-    req.file.path = outputPath;
-    req.file.filename = `${req.file.filename}.jpeg`;
+      await sharp(file.path).jpeg({ quality: 60 }).toFile(outputPath);
 
+      // Remove original
+      fs.unlinkSync(file.path);
+
+      // Build updated file object
+      const compressedFile: Express.Multer.File = {
+        ...file,
+        path: outputPath,
+        filename: `${file.filename}.jpeg`,
+      };
+
+      compressedFiles.push(compressedFile);
+    }
+
+    // Replace req.files with compressed versions
+    req.files = compressedFiles;
     next();
-  } catch (error) {
-    next(error);
+  } catch (err) {
+    next(err);
   }
 };
