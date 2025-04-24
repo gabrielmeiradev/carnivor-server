@@ -10,6 +10,7 @@ import { editPostById } from "../controllers/post/edit-by-id";
 import { getAllPosts } from "../controllers/post/get-all";
 import { getCommentsById } from "../controllers/post/get-comments-by-id";
 import checkToken from "../middlewares/check-token";
+import { compressImage } from "../middlewares/image-compression";
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -48,13 +49,25 @@ const postRouter = Router();
 
 postRouter.get("/", getAllPosts);
 
-postRouter.post("/", checkToken, upload.array("media"), createPost);
+postRouter.post(
+  "/",
+  checkToken,
+  upload.array("media"),
+  compressImage,
+  createPost
+);
 
 postRouter.get("/:id", checkToken, getPostById);
 
 postRouter.delete("/:id", checkToken, deletePostById);
 
-postRouter.post("/:id", checkToken, upload.array("media"), editPostById);
+postRouter.post(
+  "/:id",
+  checkToken,
+  upload.array("media"),
+  compressImage,
+  editPostById
+);
 
 postRouter.post("/:id/like", checkToken, likePostById);
 
