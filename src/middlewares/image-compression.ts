@@ -15,20 +15,19 @@ export const compressImages = async (
   try {
     const compressedFiles: Express.Multer.File[] = [];
 
+    const compressedFolder = path.join("uploads", "compressed");
+
+    if (!fs.existsSync(compressedFolder)) {
+      fs.mkdirSync(compressedFolder, { recursive: true });
+    }
+
     for (const file of files) {
-      const outputPath = path.resolve(
-        process.cwd(),
-        "uploads",
-        "compressed",
-        file.filename
-      );
+      const outputPath = path.join(compressedFolder, file.filename);
 
       await sharp(file.path).jpeg({ quality: 60 }).toFile(outputPath);
 
-      // Remove original
       fs.unlinkSync(file.path);
 
-      // Build updated file object
       const compressedFile: Express.Multer.File = {
         ...file,
         path: outputPath,
@@ -38,9 +37,8 @@ export const compressImages = async (
       compressedFiles.push(compressedFile);
     }
 
-    // Replace req.files with compressed versions
     req.files = compressedFiles;
-    console.log(req.files);
+
     next();
   } catch (err) {
     next(err);
