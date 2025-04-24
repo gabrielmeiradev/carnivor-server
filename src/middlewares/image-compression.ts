@@ -40,6 +40,7 @@ export const compressImages = async (
 
     // Replace req.files with compressed versions
     req.files = compressedFiles;
+    console.log(req.files);
     next();
   } catch (err) {
     next(err);
