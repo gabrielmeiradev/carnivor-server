@@ -11,6 +11,9 @@ export const getCommentsById = async (req: Request, res: Response) => {
       where: {
         parent_id: id,
       },
+      orderBy: {
+        created_at: "desc",
+      },
       include: {
         author: true,
         hashtags: true,

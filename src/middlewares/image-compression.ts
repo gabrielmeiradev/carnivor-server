@@ -41,6 +41,6 @@ export const compressImages = async (
 
     next();
   } catch (err) {
-    next(err);
+    next();
   }
 };
