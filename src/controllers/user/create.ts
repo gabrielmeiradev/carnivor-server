@@ -26,6 +26,30 @@ export const createUser = async (req: Request, res: Response) => {
       return;
     }
 
+    const userExistsWithEmail = await prisma.user.findFirst({
+      where: {
+        Email: email,
+      },
+    });
+
+    if (userExistsWithEmail) {
+      res.status(400).json({ message: "Usuário com este email já existe" });
+      return;
+    }
+
+    const userExistsWithUsername = await prisma.user.findFirst({
+      where: {
+        Login: username,
+      },
+    });
+
+    if (userExistsWithUsername) {
+      res
+        .status(400)
+        .json({ message: "Usuário com este nome de usuário já existe" });
+      return;
+    }
+
     await prisma.user.create({
       data: {
         Nome: fullName,
