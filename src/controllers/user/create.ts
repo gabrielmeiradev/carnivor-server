@@ -33,7 +33,7 @@ export const createUser = async (req: Request, res: Response) => {
     });
 
     if (userExistsWithEmail) {
-      res.status(400).json({ message: "Usuário com este email já existe" });
+      res.status(400).json({ message: "Esse e-mail já foi registrado" });
       return;
     }
 
@@ -44,9 +44,7 @@ export const createUser = async (req: Request, res: Response) => {
     });
 
     if (userExistsWithUsername) {
-      res
-        .status(400)
-        .json({ message: "Usuário com este nome de usuário já existe" });
+      res.status(400).json({ message: "Esse usuário já foi registrado" });
       return;
     }
 
