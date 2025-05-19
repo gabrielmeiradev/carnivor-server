@@ -20,6 +20,7 @@ export const getAllPosts = async (req: Request, res: Response) => {
       res.status(StatusCodes.UNAUTHORIZED).json({
         message: "Usuário não autenticado.",
       });
+
       return;
     }
 

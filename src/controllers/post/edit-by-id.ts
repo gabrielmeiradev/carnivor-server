@@ -70,13 +70,14 @@ export const editPostById = async (req: Request, res: Response) => {
       data: {
         text_content,
         medias: mediasPaths,
+        last_updated_at: new Date(),
         hashtags: {
           connect: hashtagsArray.map((hashtag) => ({
             title: hashtag.toLowerCase().replaceAll("#", ""),
           })),
         },
       },
-      include: { hashtags: true },
+      include: { hashtags: true, author: true },
     });
     res.status(200).json(post);
   } catch (error) {

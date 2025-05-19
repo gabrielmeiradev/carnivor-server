@@ -13,7 +13,6 @@ const prisma = new PrismaClient();
 export const login = async (req: Request, res: Response) => {
   try {
     const { email, password } = req.body as LoginInput;
-
     const user = await prisma.user.findFirst({
       where: {
         Email: email,
@@ -31,6 +30,7 @@ export const login = async (req: Request, res: Response) => {
     );
 
     if (!isPasswordCorrect) {
+      console.log("Senha incorreta:", password);
       res.status(401).json({ message: "Senha incorreta" });
       return;
     }
@@ -43,7 +43,7 @@ export const login = async (req: Request, res: Response) => {
     const token = accessTokenFromUser(user);
 
     const { Senha, ...userWithoutPassword } = user;
-
+    console.log("Usuário logado:", userWithoutPassword);
     res
       .status(200)
       .json({ message: "Usuário logado", token, user: userWithoutPassword });

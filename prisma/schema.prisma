@@ -36,6 +36,7 @@ model Post {
   medias           String[]
   likes_count      Int        @default(0)
   group_id         String?
+  last_updated_at  DateTime   @default(now())
   created_at       DateTime   @default(now())
   comments_count   Int        @default(0)
   likes            Like[]
