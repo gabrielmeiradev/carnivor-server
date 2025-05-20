@@ -82,11 +82,7 @@ export const getAllPosts = async (req: Request, res: Response) => {
               title: true,
             },
           },
-          categories: {
-            select: {
-              title: true,
-            },
-          },
+          categories: true,
           author: {
             select: {
               Senha: false,

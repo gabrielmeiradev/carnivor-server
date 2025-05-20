@@ -10,10 +10,13 @@ export const editPostById = async (req: Request, res: Response) => {
   const { id } = req.params;
   const { deletePreviousMedia } = req.query;
 
-  const { text_content, hashtags } = req.body as PostCreationInput;
+  const { text_content, hashtags, categories } = req.body as PostCreationInput;
   let hashtagsArray = hashtags?.split(",") ?? [];
+  let categoriesArray = categories?.split(",") ?? [];
 
   hashtagsArray = [...new Set([...hashtagsArray])];
+  categoriesArray = [...new Set([...categoriesArray])];
+  console.log(categoriesArray);
 
   const newImages = req.files as Express.Multer.File[];
   try {
@@ -63,8 +66,17 @@ export const editPostById = async (req: Request, res: Response) => {
       })
     );
 
-    console.log(mediasPaths);
+    // First, disconnect all existing categories
+    await prisma.post.update({
+      where: { post_id: id },
+      data: {
+        categories: {
+          set: [],
+        },
+      },
+    });
 
+    // Then, update the post with new data and connect new categories
     const post = await prisma.post.update({
       where: { post_id: id },
       data: {
@@ -76,8 +88,13 @@ export const editPostById = async (req: Request, res: Response) => {
             title: hashtag.toLowerCase().replaceAll("#", ""),
           })),
         },
+        categories: {
+          connect: categoriesArray.map((category: string) => ({
+            category_id: category,
+          })),
+        },
       },
-      include: { hashtags: true, author: true },
+      include: { hashtags: true, author: true, categories: true },
     });
     res.status(200).json(post);
   } catch (error) {

@@ -78,8 +78,6 @@ export const createPost = async (req: Request, res: Response) => {
 
     let isAdvertiser = false;
 
-    console.log(user);
-
     if (user.TipoUser === "Anunciante") {
       isAdvertiser = true;
 
