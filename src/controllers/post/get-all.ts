@@ -2,7 +2,6 @@ import { $Enums, PrismaClient } from "@prisma/client";
 import { Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
 import { userModelFromToken } from "../../utils/token";
-
 const prisma = new PrismaClient();
 
 export const getAllPosts = async (req: Request, res: Response) => {
@@ -15,7 +14,7 @@ export const getAllPosts = async (req: Request, res: Response) => {
       profileId,
     } = req.query;
     const user = userModelFromToken(req.headers.authorization!);
-
+    console.log("userid", profileId);
     if (!user) {
       res.status(StatusCodes.UNAUTHORIZED).json({
         message: "Usuário não autenticado.",

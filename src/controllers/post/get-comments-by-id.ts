@@ -17,6 +17,7 @@ export const getCommentsById = async (req: Request, res: Response) => {
       include: {
         author: true,
         hashtags: true,
+        comments: true,
         likes: {
           select: {
             user_id: true,
