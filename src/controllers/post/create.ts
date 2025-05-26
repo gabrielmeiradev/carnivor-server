@@ -25,8 +25,14 @@ export const createPost = async (req: Request, res: Response) => {
 
   const images = req.files as Express.Multer.File[];
 
-  if (images.length <= 0 && !parent_id) {
-    res.status(400).json({ message: "Nenhuma imagem enviada" });
+  const containsYoutubeLink =
+    text_content.includes("youtube.com/watch?v=") ||
+    text_content.includes("youtu.be/");
+
+  if (images.length <= 0 && !parent_id && !containsYoutubeLink) {
+    res
+      .status(400)
+      .json({ message: "Nenhuma imagem enviada ou link detectado" });
     return;
   }
 
