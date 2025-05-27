@@ -30,6 +30,8 @@ export const getAllPosts = async (req: Request, res: Response) => {
       filterOnlyAds = true;
     }
 
+    console.log(categories);
+
     const hashtagsArray = hashtags ? (hashtags as string).split(",") : [];
     const categoriesArray = categories ? (categories as string).split(",") : [];
     const pageNumber = parseInt(page as string, 10);
