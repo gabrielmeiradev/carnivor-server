@@ -11,10 +11,11 @@ export const getAllPosts = async (req: Request, res: Response) => {
       hashtags,
       page = 1,
       itemsPerPage = 10,
+      categories,
       profileId,
     } = req.query;
     const user = userModelFromToken(req.headers.authorization!);
-    console.log("userid", profileId);
+
     if (!user) {
       res.status(StatusCodes.UNAUTHORIZED).json({
         message: "Usuário não autenticado.",
@@ -30,7 +31,7 @@ export const getAllPosts = async (req: Request, res: Response) => {
     }
 
     const hashtagsArray = hashtags ? (hashtags as string).split(",") : [];
-
+    const categoriesArray = categories ? (categories as string).split(",") : [];
     const pageNumber = parseInt(page as string, 10);
     const itemsCount = parseInt(itemsPerPage as string, 10);
 
@@ -48,7 +49,6 @@ export const getAllPosts = async (req: Request, res: Response) => {
             contains: text as string,
             mode: "insensitive",
           },
-
           parent_id: null,
           author: {
             IdUser: {
@@ -62,7 +62,7 @@ export const getAllPosts = async (req: Request, res: Response) => {
               equals: filterOnlyAds ? $Enums.UserType.Anunciante : undefined,
             },
           },
-          AND:
+          AND: [
             hashtagsArray.length > 0
               ? {
                   hashtags: {
@@ -74,6 +74,18 @@ export const getAllPosts = async (req: Request, res: Response) => {
                   },
                 }
               : {},
+            categoriesArray.length > 0
+              ? {
+                  categories: {
+                    some: {
+                      category_id: {
+                        in: categoriesArray,
+                      },
+                    },
+                  },
+                }
+              : {},
+          ],
         },
         include: {
           hashtags: {
@@ -108,8 +120,9 @@ export const getAllPosts = async (req: Request, res: Response) => {
         where: {
           text_content: {
             contains: text as string,
+            mode: "insensitive",
           },
-          AND:
+          AND: [
             hashtagsArray.length > 0
               ? {
                   hashtags: {
@@ -121,6 +134,18 @@ export const getAllPosts = async (req: Request, res: Response) => {
                   },
                 }
               : {},
+            categoriesArray.length > 0
+              ? {
+                  categories: {
+                    some: {
+                      category_id: {
+                        in: categoriesArray,
+                      },
+                    },
+                  },
+                }
+              : {},
+          ],
         },
       }),
     ]);
