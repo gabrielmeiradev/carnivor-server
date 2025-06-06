@@ -20,6 +20,8 @@ model User {
 
   likes Like[]
   posts Post[]
+
+  PostReport PostReport[]
 }
 
 model Hashtag {
@@ -47,6 +49,8 @@ model Post {
   hashtags         Hashtag[]
   categories       Category[] @relation("PostCategories")
   is_advertisement Boolean    @default(false)
+
+  PostReport PostReport[]
 }
 
 model Like {
@@ -61,6 +65,15 @@ model Group {
   group_id String @id @default(cuid())
   name     String
   posts    Post[]
+}
+
+model PostReport {
+  report_id String @id @default(cuid())
+  post_id   String
+  user_id   String
+  reason    String @default("")
+  post      Post   @relation(fields: [post_id], references: [post_id])
+  user      User   @relation(fields: [user_id], references: [IdUser])
 }
 
 model Category {
