@@ -5,11 +5,11 @@ import { userModelFromToken } from "../../utils/token";
 const prisma = new PrismaClient();
 
 export const reportPost = async (req: Request, res: Response) => {
-  const { post_id } = req.body;
+  const { id } = req.query;
 
   const user_id = userModelFromToken(req.headers.authorization || "").IdUser;
 
-  if (!post_id) {
+  if (!id) {
     res.status(400).json({ message: "Post ID e motivo são obrigatórios" });
     return;
   }
@@ -17,7 +17,7 @@ export const reportPost = async (req: Request, res: Response) => {
   try {
     const report = await prisma.postReport.create({
       data: {
-        post_id,
+        post_id: id as string,
         user_id,
       },
     });
