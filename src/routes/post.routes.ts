@@ -11,6 +11,7 @@ import { getAllPosts } from "../controllers/post/get-all";
 import { getCommentsById } from "../controllers/post/get-comments-by-id";
 import checkToken from "../middlewares/check-token";
 import { compressImages } from "../middlewares/image-compression";
+import { reportPost } from "../controllers/post/report";
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -72,5 +73,7 @@ postRouter.post(
 postRouter.post("/:id/like", checkToken, likePostById);
 
 postRouter.get("/:id/comments", checkToken, getCommentsById);
+
+postRouter.post("/:id/report", checkToken, reportPost);
 
 export default postRouter;
