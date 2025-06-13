@@ -4,6 +4,7 @@ import { Request, Response } from "express";
 import { genesisGroup } from "../../server";
 import { userModelFromToken } from "../../utils/token";
 import { StatusCodes } from "http-status-codes";
+import { getMediaThumbnail } from "../../utils/thumbnail";
 
 export type PostCreationInput = {
   parent_id?: string;
@@ -28,6 +29,10 @@ export const createPost = async (req: Request, res: Response) => {
   const containsYoutubeLink =
     text_content.includes("youtube.com/watch?v=") ||
     text_content.includes("youtu.be/");
+
+  const upload_path = "uploads";
+
+  const thumbnail = getMediaThumbnail(images[0]);
 
   if (images.length <= 0 && !parent_id && !containsYoutubeLink) {
     res
@@ -120,6 +125,7 @@ export const createPost = async (req: Request, res: Response) => {
         author_id: IdUser,
         medias: images.map((image) => image.path),
         is_advertisement: isAdvertiser,
+        thumbnail_image: thumbnail,
         categories: {
           connect: categoriesArray.map((category) => ({
             category_id: category,

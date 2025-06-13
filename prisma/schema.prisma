@@ -41,6 +41,7 @@ model Post {
   last_updated_at  DateTime   @default(now())
   created_at       DateTime   @default(now())
   comments_count   Int        @default(0)
+  thumbnail_image  String?    @default("")
   likes            Like[]
   author           User       @relation(fields: [author_id], references: [IdUser])
   group            Group?     @relation(fields: [group_id], references: [group_id])
