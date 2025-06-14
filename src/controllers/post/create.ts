@@ -34,7 +34,13 @@ export const createPost = async (req: Request, res: Response) => {
 
   let thumbnail = "";
   if (images.length > 0) {
-    thumbnail = getMediaThumbnail(images[0]);
+    try {
+      thumbnail = getMediaThumbnail(images[0]);
+    } catch (error) {
+      console.error("Erro ao gerar thumbnail:", error);
+      res.status(500).json({ message: "Erro ao gerar thumbnail" });
+      return;
+    }
   }
 
   if (images.length <= 0 && !parent_id && !containsYoutubeLink) {
