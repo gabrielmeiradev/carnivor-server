@@ -32,7 +32,10 @@ export const createPost = async (req: Request, res: Response) => {
 
   const upload_path = "uploads";
 
-  const thumbnail = getMediaThumbnail(images[0]);
+  let thumbnail = "";
+  if (images.length > 0) {
+    thumbnail = getMediaThumbnail(images[0]);
+  }
 
   if (images.length <= 0 && !parent_id && !containsYoutubeLink) {
     res
