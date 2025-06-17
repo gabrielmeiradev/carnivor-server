@@ -42,6 +42,8 @@ export const deletePostById = async (req: Request, res: Response) => {
       });
     }
 
+    console.log("Deletando post com ID:", id);
+    console.log("Deletando post de usuário com ID:", IdUser);
     await prisma.post.deleteMany({
       where: {
         OR: [
