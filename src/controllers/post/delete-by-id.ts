@@ -12,28 +12,41 @@ export const deletePostById = async (req: Request, res: Response) => {
 
   try {
     const { IdUser } = userModelFromToken(req.headers.authorization!);
-    await prisma.like.deleteMany({
-      where: {
-        post_id: id,
-      },
-    });
 
     const post = await prisma.post.findUnique({
       where: {
         post_id: id,
       },
+      include: {
+        comments: true,
+      },
     });
 
     if (!post || post.author_id !== IdUser) {
-      res.status(StatusCodes.FORBIDDEN).json({ message: "Não autorizado" });
-      return;
+      return res
+        .status(StatusCodes.FORBIDDEN)
+        .json({ message: "Não autorizado" });
     }
+
+    for (const comment of post.comments) {
+      await prisma.like.deleteMany({ where: { post_id: comment.post_id } });
+      await prisma.postReport.deleteMany({
+        where: { post_id: comment.post_id },
+      });
+    }
+
+    await prisma.post.deleteMany({
+      where: {
+        parent_id: id,
+      },
+    });
+
+    await prisma.like.deleteMany({ where: { post_id: id } });
+    await prisma.postReport.deleteMany({ where: { post_id: id } });
 
     if (post.parent_id) {
       await prisma.post.update({
-        where: {
-          post_id: post.parent_id,
-        },
+        where: { post_id: post.parent_id },
         data: {
           comments_count: {
             decrement: 1,
@@ -42,23 +55,9 @@ export const deletePostById = async (req: Request, res: Response) => {
       });
     }
 
-    await prisma.postReport.deleteMany({
+    await prisma.post.delete({
       where: {
         post_id: id,
-      },
-    });
-
-    await prisma.post.deleteMany({
-      where: {
-        OR: [
-          {
-            post_id: id,
-            author_id: IdUser,
-          },
-          {
-            parent_id: id,
-          },
-        ],
       },
     });
 
@@ -67,17 +66,17 @@ export const deletePostById = async (req: Request, res: Response) => {
       try {
         await fs.promises.unlink(filePath);
       } catch (err) {
-        console.error(`Failed to delete image file: ${filePath}`, err);
+        console.error(`Falha ao deletar imagem: ${filePath}`, err);
       }
     }
 
-    res.status(StatusCodes.OK).json({ message: "Post deletado" });
-    return;
+    return res
+      .status(StatusCodes.OK)
+      .json({ message: "Post deletado com sucesso" });
   } catch (error) {
     console.error(error);
-    res
+    return res
       .status(StatusCodes.INTERNAL_SERVER_ERROR)
       .json({ message: "Falha ao deletar post" });
-    return;
   }
 };
