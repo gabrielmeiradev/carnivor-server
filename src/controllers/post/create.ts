@@ -1,10 +1,11 @@
-import { PrismaClient } from "@prisma/client";
+import { Post, PrismaClient } from "@prisma/client";
 // import { getUserIdFromToken } from "../../utils/token";
 import { Request, Response } from "express";
 import { genesisGroup } from "../../server";
 import { userModelFromToken } from "../../utils/token";
 import { StatusCodes } from "http-status-codes";
 import { getMediaThumbnail } from "../../utils/thumbnail";
+import { OneSignalNotificationHelper } from "../../helpers/notification/oneSignalNotification";
 
 export type PostCreationInput = {
   parent_id?: string;
@@ -30,8 +31,6 @@ export const createPost = async (req: Request, res: Response) => {
     text_content.includes("youtube.com/watch?v=") ||
     text_content.includes("youtu.be/");
 
-  const upload_path = "uploads";
-
   let thumbnail = "";
   if (images.length > 0) {
     try {
@@ -56,10 +55,10 @@ export const createPost = async (req: Request, res: Response) => {
     });
     return;
   }
-
+  let parentPost: Post | null = null;
   if (parent_id) {
     try {
-      const parentPost = await prisma.post.update({
+      let parentPost = await prisma.post.update({
         where: { post_id: parent_id },
         data: {
           comments_count: {
@@ -148,7 +147,17 @@ export const createPost = async (req: Request, res: Response) => {
         },
       },
     });
-    console.log("Post criado:", post);
+    try {
+      if (parent_id) {
+        OneSignalNotificationHelper.sendNotification({
+          playerId: parentPost!.author_id,
+          title: "Novo comentário em seu post",
+          message: `O usuário ${user.Nome} comentou em seu post.`,
+        });
+      }
+    } catch (error) {
+      console.error("Erro ao enviar notificação de comentário:", error);
+    }
     res.status(200).json(post);
   } catch (error) {
     console.error(error);
