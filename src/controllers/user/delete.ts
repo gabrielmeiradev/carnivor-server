@@ -23,14 +23,11 @@ export const deleteUser = async (req: Request, res: Response) => {
       return;
     }
 
-    // Delete user's posts, likes, and reports
-    await prisma.post.deleteMany({ where: { author_id: userId } });
-    await prisma.like.deleteMany({ where: { user_id: userId } });
-    await prisma.postReport.deleteMany({ where: { user_id: userId } });
-
-    // Delete the user
-    await prisma.user.delete({
+    await prisma.user.update({
       where: { IdUser: userId },
+      data: {
+        UserAtivo: false,
+      },
     });
 
     res.status(200).json({ message: "Usuário deletado com sucesso" });

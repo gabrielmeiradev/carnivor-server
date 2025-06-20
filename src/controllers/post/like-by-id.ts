@@ -12,7 +12,7 @@ export const likePostById = async (req: Request, res: Response) => {
   const author_id = userModelFromToken(req.headers.authorization!).IdUser;
 
   const likeAuthor = await prisma.user.findUnique({
-    where: { IdUser: author_id as string },
+    where: { IdUser: author_id as string, UserAtivo: true },
   });
   if (!likeAuthor) {
     res

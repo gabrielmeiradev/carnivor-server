@@ -48,7 +48,12 @@ export const editPostById = async (req: Request, res: Response) => {
     }
 
     await prisma.post.update({
-      where: { post_id: id },
+      where: {
+        post_id: id,
+        author: {
+          UserAtivo: true,
+        },
+      },
       data: {
         hashtags: {
           set: [],

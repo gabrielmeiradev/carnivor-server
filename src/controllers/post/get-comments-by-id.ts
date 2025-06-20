@@ -10,6 +10,9 @@ export const getCommentsById = async (req: Request, res: Response) => {
     const comments = await prisma.post.findMany({
       where: {
         parent_id: id,
+        author: {
+          UserAtivo: true,
+        },
       },
       orderBy: {
         created_at: "desc",

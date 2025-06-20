@@ -87,7 +87,7 @@ export const createPost = async (req: Request, res: Response) => {
     }
 
     const user = await prisma.user.findUnique({
-      where: { IdUser: IdUser },
+      where: { IdUser: IdUser, UserAtivo: true },
     });
 
     if (!user) {

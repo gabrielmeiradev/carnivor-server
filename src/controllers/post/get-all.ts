@@ -60,6 +60,7 @@ export const getAllPosts = async (req: Request, res: Response) => {
                 ? (profileId as string)
                 : undefined,
             },
+            UserAtivo: true,
             TipoUser: {
               equals: filterOnlyAds ? $Enums.UserType.Anunciante : undefined,
             },
