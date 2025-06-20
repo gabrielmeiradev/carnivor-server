@@ -23,9 +23,8 @@ export const deletePostById = async (req: Request, res: Response) => {
     });
 
     if (!post || post.author_id !== IdUser) {
-      return res
-        .status(StatusCodes.FORBIDDEN)
-        .json({ message: "Não autorizado" });
+      res.status(StatusCodes.FORBIDDEN).json({ message: "Não autorizado" });
+      return;
     }
 
     for (const comment of post.comments) {
@@ -70,13 +69,13 @@ export const deletePostById = async (req: Request, res: Response) => {
       }
     }
 
-    return res
-      .status(StatusCodes.OK)
-      .json({ message: "Post deletado com sucesso" });
+    res.status(StatusCodes.OK).json({ message: "Post deletado com sucesso" });
+    return;
   } catch (error) {
     console.error(error);
-    return res
+    res
       .status(StatusCodes.INTERNAL_SERVER_ERROR)
       .json({ message: "Falha ao deletar post" });
+    return;
   }
 };
