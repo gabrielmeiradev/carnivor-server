@@ -24,6 +24,11 @@ export const login = async (req: Request, res: Response) => {
       return;
     }
 
+    if (!user.UserAtivo) {
+      res.status(403).json({ message: "Conta em processo de exclusão" });
+      return;
+    }
+
     const isPasswordCorrect = await comparePassword(
       password,
       user?.Senha ?? ""
