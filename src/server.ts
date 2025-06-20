@@ -39,7 +39,7 @@ app.get("/heartbeat", (_, res) => {
 export let genesisGroup: Group | null = null;
 
 // Server host
-app.listen(3000, async () => {
+app.listen(3002, async () => {
   genesisGroup = await prisma.group.findFirst({
     where: {
       name: "Genesis",
@@ -52,5 +52,5 @@ app.listen(3000, async () => {
       },
     });
   }
-  console.log("Server is running on port 3000");
+  console.log("Server is running on port 3002");
 });
