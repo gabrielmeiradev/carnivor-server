@@ -4,6 +4,7 @@ import { Router } from "express";
 
 import { createUser } from "../controllers/user/create";
 import { login } from "../controllers/user/login";
+import { deleteUser } from "../controllers/user/delete";
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -40,5 +41,7 @@ const userRouter = Router();
 userRouter.post("/register", upload.single("profilePicture"), createUser);
 
 userRouter.post("/login", login);
+
+userRouter.post("/delete-me", deleteUser);
 
 export default userRouter;

@@ -8,7 +8,7 @@ import postRouter from "./routes/post.routes";
 import hashtagRouter from "./routes/hashtag.routes";
 import userRouter from "./routes/user.routes";
 
-import { PrismaClient } from "@prisma/client";
+import { Group, PrismaClient } from "@prisma/client";
 import categoryRouter from "./routes/category.routes";
 
 // Setting up server
@@ -36,18 +36,21 @@ app.get("/heartbeat", (_, res) => {
   res.status(StatusCodes.OK).send("Beating!");
 });
 
-export let genesisGroup: {
-  group_id: string;
-  name: string;
-};
+export let genesisGroup: Group | null = null;
 
 // Server host
 app.listen(3000, async () => {
-  genesisGroup = await prisma.group.create({
-    data: {
+  genesisGroup = await prisma.group.findFirst({
+    where: {
       name: "Genesis",
     },
   });
-
+  if (!genesisGroup) {
+    genesisGroup = await prisma.group.create({
+      data: {
+        name: "Genesis",
+      },
+    });
+  }
   console.log("Server is running on port 3000");
 });

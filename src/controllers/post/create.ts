@@ -128,7 +128,7 @@ export const createPost = async (req: Request, res: Response) => {
     const post = await prisma.post.create({
       data: {
         parent_id: parent_id ?? null,
-        group_id: genesisGroup.group_id,
+        group_id: genesisGroup!.group_id,
         text_content,
         author_id: IdUser,
         medias: images.map((image) => image.path),
