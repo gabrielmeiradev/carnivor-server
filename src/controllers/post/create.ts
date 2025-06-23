@@ -6,6 +6,7 @@ import { userModelFromToken } from "../../utils/token";
 import { StatusCodes } from "http-status-codes";
 import { getMediaThumbnail } from "../../utils/thumbnail";
 import { OneSignalNotificationHelper } from "../../helpers/notification/oneSignalNotification";
+import { notifyUser } from "../../queue/producer";
 
 export type PostCreationInput = {
   parent_id?: string;
@@ -149,11 +150,11 @@ export const createPost = async (req: Request, res: Response) => {
     });
     try {
       if (parent_id) {
-        OneSignalNotificationHelper.sendNotification({
-          playerId: parentPost!.author_id,
-          title: "Novo comentário em seu post",
-          message: `O usuário ${user.Nome} comentou em seu post.`,
-        });
+        await notifyUser(
+          parentPost!.author_id,
+          "Novo comentário em seu post",
+          `O usuário ${user.Nome} comentou em seu post.`
+        );
       }
     } catch (error) {
       console.error("Erro ao enviar notificação de comentário:", error);

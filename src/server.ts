@@ -10,6 +10,7 @@ import userRouter from "./routes/user.routes";
 
 import { Group, PrismaClient } from "@prisma/client";
 import categoryRouter from "./routes/category.routes";
+import notificationRouter from "./routes/notification.routes";
 
 // Setting up server
 const app = express();
@@ -30,6 +31,7 @@ app.use("/posts", postRouter);
 app.use("/user", userRouter);
 app.use("/hashtags", hashtagRouter);
 app.use("/categories", categoryRouter);
+app.use("/notifications", notificationRouter);
 
 // Heartbeat
 app.get("/heartbeat", (_, res) => {
