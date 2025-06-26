@@ -43,19 +43,13 @@ export const createPost = async (req: Request, res: Response) => {
     }
   }
 
-  if (images.length <= 0 && !parent_id && !containsYoutubeLink) {
-    res
-      .status(400)
-      .json({ message: "Nenhuma imagem enviada ou link detectado" });
-    return;
-  }
-
   if (parent_id && images.length > 0) {
     res.status(400).json({
       message: "Não é permitido enviar imagens em comentários",
     });
     return;
   }
+
   let parentPost: Post | null = null;
   if (parent_id) {
     try {
