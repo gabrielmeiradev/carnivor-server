@@ -18,13 +18,15 @@ export const createUser = async (req: Request, res: Response) => {
   try {
     const file = req.file as Express.Multer.File;
 
-    const { username, fullName, phone, email, password, userType } =
+    let { username, fullName, phone, email, password, userType } =
       req.body as CreateUserInput;
 
     if (!file) {
       res.status(400).json({ message: "Envie uma imagem de perfil" });
       return;
     }
+
+    email = email.toLowerCase().trim();
 
     const userExistsWithEmail = await prisma.user.findFirst({
       where: {

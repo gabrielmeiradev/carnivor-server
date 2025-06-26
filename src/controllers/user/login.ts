@@ -12,7 +12,8 @@ const prisma = new PrismaClient();
 
 export const login = async (req: Request, res: Response) => {
   try {
-    const { email, password } = req.body as LoginInput;
+    let { email, password } = req.body as LoginInput;
+    email = email.toLowerCase().trim();
     const user = await prisma.user.findFirst({
       where: {
         Email: email,

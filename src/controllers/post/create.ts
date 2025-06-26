@@ -5,7 +5,6 @@ import { genesisGroup } from "../../server";
 import { userModelFromToken } from "../../utils/token";
 import { StatusCodes } from "http-status-codes";
 import { getMediaThumbnail } from "../../utils/thumbnail";
-import { OneSignalNotificationHelper } from "../../helpers/notification/oneSignalNotification";
 import { notifyUser } from "../../queue/producer";
 
 export type PostCreationInput = {
@@ -18,7 +17,7 @@ export type PostCreationInput = {
 const prisma = new PrismaClient();
 
 export const createPost = async (req: Request, res: Response) => {
-  const { parent_id, text_content, hashtags, categories } =
+  let { parent_id, text_content, hashtags, categories } =
     req.body as PostCreationInput;
 
   let hashtagsArray = hashtags?.split(",") ?? [];
@@ -28,10 +27,7 @@ export const createPost = async (req: Request, res: Response) => {
 
   const images = req.files as Express.Multer.File[];
 
-  const containsYoutubeLink =
-    text_content.includes("youtube.com/watch?v=") ||
-    text_content.includes("youtu.be/");
-
+  text_content = text_content.trim();
   let thumbnail = "";
   if (images.length > 0) {
     try {
