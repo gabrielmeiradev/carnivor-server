@@ -16,10 +16,20 @@ export const login = async (req: Request, res: Response) => {
     email = email.toLowerCase().trim();
     const user = await prisma.user.findFirst({
       where: {
-        Email: {
-          equals: email,
-          mode: "insensitive",
-        },
+        OR: [
+          {
+            Email: {
+              equals: email,
+              mode: "insensitive",
+            },
+          },
+          {
+            Login: {
+              equals: email,
+              mode: "insensitive",
+            },
+          },
+        ],
       },
     });
 
