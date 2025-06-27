@@ -71,6 +71,7 @@ export const login = async (req: Request, res: Response) => {
           CurrentDeviceId: deviceId,
         },
       });
+      console.log("Dispositivo atualizado:", deviceId);
     }
 
     const { Senha, ...userWithoutPassword } = user;
