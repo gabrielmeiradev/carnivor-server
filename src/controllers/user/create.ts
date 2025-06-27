@@ -56,7 +56,7 @@ export const createUser = async (req: Request, res: Response) => {
         Email: email,
         Telefone: phone,
         Senha: await encryptPassword(password),
-        Login: username,
+        Login: username.trim().toLowerCase(),
         ProfileImage: file?.path ?? "",
         TipoUser: getUserTypeFromString(userType),
       },
