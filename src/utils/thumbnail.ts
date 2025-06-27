@@ -8,7 +8,8 @@ const generateThumbnail = (videoPath: string, thumbnailPath: string): void => {
 };
 
 const compressImage = (imagePath: string, outputPath: string): void => {
-  const command = `ffmpeg -i "${imagePath}" -q:v 2 "${outputPath}"`;
+  const command = `ffmpeg -i "${imagePath}" -q:v 2 -vf "autorotate" "${outputPath}"`;
+
   execSync(command);
 };
 
