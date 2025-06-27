@@ -47,26 +47,9 @@ export const likePostById = async (req: Request, res: Response) => {
         },
       });
 
-      let author = await prisma.user.findUnique({
-        where: { IdUser: post.author_id, UserAtivo: true },
-      });
-
-      if (!author) {
-        res
-          .status(StatusCodes.NOT_FOUND)
-          .json({ message: "Autor não encontrado" });
-        return;
-      }
-
       try {
-        if (!author.CurrentDeviceId) {
-          console.warn(
-            "Autor não possui dispositivo registrado para notificações"
-          );
-          return;
-        }
         await notifyUser(
-          author.CurrentDeviceId,
+          post.author_id,
           "Novo like no seu post",
           `${likeAuthor.Nome} curtiu seu post`
         );

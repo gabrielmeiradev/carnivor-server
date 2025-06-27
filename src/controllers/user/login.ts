@@ -13,7 +13,7 @@ const prisma = new PrismaClient();
 
 export const login = async (req: Request, res: Response) => {
   try {
-    let { email, password, deviceId } = req.body as LoginInput;
+    let { email, password } = req.body as LoginInput;
 
     email = email.toLowerCase().trim();
     const user = await prisma.user.findFirst({
@@ -62,17 +62,6 @@ export const login = async (req: Request, res: Response) => {
     }
 
     const token = accessTokenFromUser(user);
-
-    // set deviceId if provided
-    if (deviceId) {
-      await prisma.user.update({
-        where: { IdUser: user.IdUser },
-        data: {
-          CurrentDeviceId: deviceId,
-        },
-      });
-      console.log("Dispositivo atualizado:", deviceId);
-    }
 
     const { Senha, ...userWithoutPassword } = user;
     console.log("Usuário logado:", userWithoutPassword);
