@@ -5,10 +5,18 @@ const prisma = new PrismaClient();
 
 export default async function updateUser(req: Request, res: Response) {
   const { id } = req.params;
-  const { fullName, username } = req.body;
+  const { fullName, username, phone } = req.body;
   const file = req.file as Express.Multer.File;
 
-  if (!fullName || !username) {
+  if (
+    !fullName ||
+    !username ||
+    !id ||
+    fullName.trim() === "" ||
+    username.trim() === "" ||
+    !phone ||
+    phone.trim() === ""
+  ) {
     res.status(400).json({ message: "Todos os campos são obrigatórios." });
     return;
   }
@@ -27,9 +35,16 @@ export default async function updateUser(req: Request, res: Response) {
     return;
   }
 
+  // check if data is valid
+  if (!id) {
+    res.status(400).json({ message: "ID do usuário é obrigatório." });
+    return;
+  }
+
   const userUpdatedData: any = {
     Nome: fullName.trim(),
     Login: username.trim().toLowerCase(),
+    Telefone: phone.trim(),
   };
 
   if (file) {
