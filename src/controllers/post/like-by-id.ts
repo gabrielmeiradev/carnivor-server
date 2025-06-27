@@ -3,6 +3,7 @@ import { Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
 import { userModelFromToken } from "../../utils/token";
 import { OneSignalNotificationHelper } from "../../helpers/notification/oneSignalNotification";
+import { notifyUser } from "../../queue/producer";
 
 const prisma = new PrismaClient();
 
@@ -46,12 +47,29 @@ export const likePostById = async (req: Request, res: Response) => {
         },
       });
 
+      let author = await prisma.user.findUnique({
+        where: { IdUser: post.author_id, UserAtivo: true },
+      });
+
+      if (!author) {
+        res
+          .status(StatusCodes.NOT_FOUND)
+          .json({ message: "Autor não encontrado" });
+        return;
+      }
+
       try {
-        OneSignalNotificationHelper.sendNotification({
-          playerId: post.author_id,
-          title: "Novo like no seu post",
-          message: `${likeAuthor.Nome} curtiu seu post`,
-        });
+        if (!author.CurrentDeviceId) {
+          console.warn(
+            "Autor não possui dispositivo registrado para notificações"
+          );
+          return;
+        }
+        await notifyUser(
+          author.CurrentDeviceId,
+          "Novo like no seu post",
+          `${likeAuthor.Nome} curtiu seu post`
+        );
       } catch (error) {
         console.error("Erro ao enviar notificação de like:", error);
       }

@@ -8,15 +8,16 @@ datasource db {
 }
 
 model User {
-  IdUser       String    @id @default(cuid())
-  Login        String?   @unique
-  Nome         String?
-  Email        String?   @unique
-  Senha        String?
-  Telefone     String?
-  TipoUser     UserType? @default(Membro)
-  UserAtivo    Boolean?  @default(true)
-  ProfileImage String?
+  IdUser          String    @id @default(cuid())
+  Login           String?   @unique
+  Nome            String?
+  Email           String?   @unique
+  Senha           String?
+  Telefone        String?
+  TipoUser        UserType? @default(Membro)
+  UserAtivo       Boolean?  @default(true)
+  ProfileImage    String?
+  CurrentDeviceId String?   @default("")
 
   likes Like[]
   posts Post[]

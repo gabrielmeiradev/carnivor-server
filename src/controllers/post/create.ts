@@ -140,8 +140,17 @@ export const createPost = async (req: Request, res: Response) => {
     });
     try {
       if (parent_id) {
+        const parentPostUser = await prisma.user.findUnique({
+          where: { IdUser: parentPost!.author_id },
+        });
+
+        if (!parentPostUser) {
+          console.error("Usuário do post pai não encontrado");
+          return;
+        }
+
         await notifyUser(
-          parentPost!.author_id,
+          parentPostUser.CurrentDeviceId ?? "",
           "Novo comentário em seu post",
           `O usuário ${user.Nome} comentou em seu post.`
         );
