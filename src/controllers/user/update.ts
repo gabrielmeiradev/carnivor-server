@@ -16,6 +16,9 @@ export default async function updateUser(req: Request, res: Response) {
   const userExistsWithUsername = await prisma.user.findFirst({
     where: {
       Login: username,
+      IdUser: {
+        not: id, // Exclude the current user from the check
+      },
     },
   });
 
